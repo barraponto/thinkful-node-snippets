@@ -1,0 +1,11 @@
+{
+  "name": "snippets",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Capi Etheriel <barraponto@gmail.com> (https://barraponto.blog.br)",
+  "license": "GPL-3.0"
+}
