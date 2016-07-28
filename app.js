@@ -1,43 +1,65 @@
-var MongoClient = require('mongodb').MongoClient;
+var mongoose = require('mongoose');
 
-MongoClient.connect('mongodb://localhost/', function(error, db){
-  if (error) { console.error(error); db.close(); return; }
-  var collection = db.collection('snippets');
+mongoose.connect('mongodb://localhost/');
+
+mongoose.connection.on('error', function(error){
+  console.error('Could not connect to MongoDB. Error:', error);
+});
+
+mongoose.connection.once('open', function(){
+  var snippetSchema = mongoose.Schema({
+    name: { type: String, unique: true },
+    content: { type: String }
+  });
+  var Snippet = mongoose.model('Snippet', snippetSchema);
 
   var create = function(name, content) {
     var snippet = {name: name, content: content};
-    collection.insert(snippet, function(error, result){
-      if (error) { console.error(error); db.close(); return; }
-      console.log('Created snippet', name);
-      db.close();
+    Snippet.create(snippet, function(error, snippet){
+      if (error || !snippet) {
+        console.error('Could not create snippet', name);
+      } else {
+         console.log('Created snippet', snippet.name);
+      }
+      mongoose.disconnect();
     });
   };
+
   var read = function(name) {
     var query = {name: name};
-    collection.findOne(query, function(error, snippet){
-      if (error || !snippet) { console.error('Could not read snippet ', name); db.close(); return; }
-      console.log('Read snippet', name);
-      console.log(snippet.content);
-      db.close();
+    Snippet.findOne(query, function(error, snippet){
+      if (error || !snippet) {
+        console.error('Could not read snippet', name);
+      } else {
+         console.log('Read snippet', snippet.name);
+         console.log(snippet.content);
+      }
+      mongoose.disconnect();
     });
   };
+
   var update = function(name, content) {
     var query = {name: name};
-    var update = {$set: {content: content}};
-    collection.findAndModify(query, null, update, function(error, result){
-      var snippet = result.value;
-      if (error || !snippet) { console.error('Could not update snippet ', name); db.close(); return; }
-      console.log('Updated snippet', name);
-      db.close();
+    var data = {content: content};
+    Snippet.findOneAndUpdate(query, data, function(error, snippet){
+      if (error || !snippet) {
+        console.error('Could not update snippet', name);
+      } else {
+         console.log('Updated snippet', snippet.name);
+      }
+      mongoose.disconnect();
     });
   };
+
   var delete_ = function(name) {
     var query = {name: name};
-    collection.findAndRemove(query, function(error, result){
-      var snippet = result.value;
-      if (error || !snippet) { console.error('Could not delete snippet ', name); db.close(); return; }
-      console.log('Deleted snippet', name);
-      db.close();
+    Snippet.findOneAndRemove(query, function(error, snippet){
+      if (error || !snippet) {
+        console.error('Could not delete snippet', name);
+      } else {
+         console.log('Deleted snippet', snippet.name);
+      }
+      mongoose.disconnect();
     });
   };
 

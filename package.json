@@ -10,6 +10,6 @@
   "author": "Capi Etheriel <barraponto@gmail.com> (https://barraponto.blog.br)",
   "license": "GPL-3.0",
   "dependencies": {
-    "mongodb": "^2.2.4"
+    "mongoose": "^4.5.7"
   }
 }
